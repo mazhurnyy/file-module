@@ -1,0 +1,31 @@
+{
+  "name": "mazhurnyy/file",
+  "description": "",
+  "type": "laravel-module",
+  "authors": [
+    {
+      "name": "BBM",
+      "email": "mazhurnyy@mail.ru"
+    }
+  ],
+  "require": {
+    "intervention/image": "^2.5",
+    "intervention/imagecache": "^2.5",
+    "league/flysystem-aws-s3-v3": "^1.0",
+    "league/flysystem-cached-adapter": "^1.1"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Modules\\File\\Providers\\FileServiceProvider"
+      ],
+      "aliases": {
+      }
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Modules\\File\\": ""
+    }
+  }
+}
