@@ -1,16 +1,19 @@
 {
   "name": "mazhurnyy/file-module",
-  "description": "",
+  "description": "FileService S3",
   "type": "laravel-module",
   "authors": [
     {
       "name": "mazhurnyy",
-      "email": "mazhurnyy@mail.ru"
+      "email": "mazhurnyy@mail.ru",
+      "role": "Developer"
     }
   ],
+  "license": "MIT",
   "require": {
     "intervention/image": "^2.5",
     "intervention/imagecache": "^2.5",
+    "joshbrw/laravel-module-installer": "^2.0",
     "league/flysystem-aws-s3-v3": "^1.0",
     "league/flysystem-cached-adapter": "^1.1"
   },

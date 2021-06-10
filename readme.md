@@ -2,6 +2,19 @@
 
 работает с хранилищами, поддерживающими S3 Amazon стандарт
 
+## Установка
+
+Перед началом установки пакета, в проекте должны быть установлены
+пакеты
+
+nwidart/laravel-modules
+и
+joshbrw/laravel-module-installer
+
+"nwidart/laravel-modules": "^8.2",
+"joshbrw/laravel-module-installer": "^2.0"
+
+
 ## Добавить зависимости модуля
 
 запустить
