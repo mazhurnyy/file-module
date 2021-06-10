@@ -1,10 +1,10 @@
 {
-  "name": "mazhurnyy/file",
+  "name": "mazhurnyy/file-module",
   "description": "",
   "type": "laravel-module",
   "authors": [
     {
-      "name": "BBM",
+      "name": "mazhurnyy",
       "email": "mazhurnyy@mail.ru"
     }
   ],
@@ -23,6 +23,7 @@
       }
     }
   },
+  "minimum-stability": "dev",
   "autoload": {
     "psr-4": {
       "Modules\\File\\": ""
