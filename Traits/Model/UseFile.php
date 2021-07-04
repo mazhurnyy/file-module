@@ -2,10 +2,11 @@
 
 namespace Modules\File\Traits\Model;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Modules\File\Models\Extension;
 use Modules\File\Repositories\TypeFile;
 use Modules\File\Services\Path;
-use Modules\Setting\Services\ModelType;
 
 /**
  * Trait UseFile
@@ -230,7 +231,7 @@ trait UseFile
             $url = config('filesystems.file.storage') . $path;
         } else
         {
-            $path = 'images/plugs/' . ModelType::getModelNameLower($this) . '/' . $prefix . '.webp';
+            $path = 'images/plugs/' . $this->getModelNameLower($this) . '/' . $prefix . '.webp';
             if (file_exists($path))
             {
                 $url = mix($path);
@@ -262,5 +263,29 @@ trait UseFile
                 "webp"   => '',
             ],
         ];
+    }
+
+    /**
+     * Возвращаем имя модели в нижнем регистре по коллекции модели
+     *
+     * @param Model $model
+     *
+     * @return string
+     */
+    private function getModelNameLower(Model $model): string
+    {
+        return Str::snake($this->getModelName($model));
+    }
+
+    /**
+     * Возвращаем имя модели по коллекции модели
+     *
+     * @param Model $model
+     *
+     * @return string
+     */
+    private function getModelName(Model $model): string
+    {
+        return class_basename($model->getMorphClass());
     }
 }
