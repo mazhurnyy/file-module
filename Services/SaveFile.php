@@ -3,6 +3,7 @@
 namespace Modules\File\Services;
 
 use Carbon\Carbon;
+use GdImage;
 use Illuminate\Database\Eloquent\Model;
 use Intervention\Image\Image;
 use Modules\File\Models\Extension;
@@ -27,9 +28,9 @@ class SaveFile
      */
     protected Model $model;
     /**
-     * @var Extension типа расширения файла (расширение, имя, mime)
+     * @var Extension|null типа расширения файла (расширение, имя, mime)
      */
-    protected Extension $extension;
+    protected ?Extension $extension;
 
     /**
      * @var string уникальный токен для имени файла
@@ -48,6 +49,10 @@ class SaveFile
      */
     protected int $order;
     /**
+     * @var Image|null
+     */
+    protected ?Image $binary = null;
+    /**
      * @var int|null ID  созданного файла
      */
     protected ?int $file_id = null;
@@ -65,13 +70,12 @@ class SaveFile
      * @param string $extension_name расширение файла
      * @param int    $order          сортировка ( от 1)
      */
-    public function __construct(Model $model, string $path, string $extension_name, $order = 1)
+    public function __construct(Model $model, string $path, string $extension_name, int $order = 1)
     {
         $this->model          = $model;
         $this->path           = $path;
         $this->extension_name = $extension_name;
         $this->order          = $order;
-        $this->img            = \Image::canvas(1, 1);
     }
 
     /**
@@ -125,20 +129,20 @@ class SaveFile
         $size        = 0;
         $flag        = true;
         $try         = 1;
-
+        $img            = \Image::canvas(1, 1);
         while ($flag && $try <= 3):
             try {
-                $this->img = \Image::make($this->path);
+                $img = \Image::make($this->path);
                 $flag      = false;//Image migrated successfully
             } catch (\Exception $e) {
                 //not throwing  error when exception occurs
             }
             $try++;
         endwhile;
-        if ($this->img) {
-            $size = $this->resizePhoto();
-            $this->img->destroy();
-            unset($this->img);
+
+        if ($img) {
+            $size = $this->resizePhoto($img);
+            unset($img);
         }
 
         return $size;
@@ -147,16 +151,16 @@ class SaveFile
     /**
      * сохранияем изображение с формата Base64
      *
-     * @param $img
+     * @param $image_64
      *
      * @throws \Exception
      */
-    public function saveBase64($img)
+    public function saveBase64($image_64)
     {
+        $this->binary = $image_64;
         $this->token = $this->generateToken();
-        $this->img   = $img;
 
-        $this->resizePhoto();
+        $this->resizePhoto($this->binary);
     }
 
 
@@ -184,16 +188,16 @@ class SaveFile
      * создаем файлы заданных размеров для текущего типа сущности,
      * сохраняем оригинал файла
      *
+     * @param GdImage|Image $img
+     *
      * @return int - размер созданного файла
      * @throws \Exception
      */
-    public function resizePhoto(): int
+    public function resizePhoto(GdImage|Image $img): int
     {
-        $this->img->backup();
         $file_extension = ['webp' => 'image/webp'];
         $path           = Path::getPathDisk($this->token, $this->model);
-        $size           = $this->saveImage($file_extension, $path, 100);
-        $this->img->reset();
+        $size           = $this->saveImage($img, $file_extension, $path, 100);
         $file_extension += [
             'jpg' => 'image/jpeg',
         ];
@@ -202,9 +206,9 @@ class SaveFile
             if ($parameters['quality'] > 0 && !in_array($parameters['prefix'], $prefix)) {
                 $prefix[] = $parameters['prefix'];
                 $path_prefix = $path . '-' . $parameters['prefix'];
-                $this->changeImage($parameters);
-                $this->saveImage($file_extension, $path_prefix, $parameters['quality'], $parameters['prefix']);
-                $this->img->reset();
+                $img = $this->changeImage($parameters);
+                $this->saveImage($img, $file_extension, $path_prefix, $parameters['quality'], $parameters['prefix']);
+                unset($img);
             }
         }
 
@@ -213,36 +217,42 @@ class SaveFile
 
     /**
      * подгоняем изображение под заданный размер
-     * если высота proportion->height меньше proportion->width - ворматируем сначала по высоте, потом по ширине
-     *  если ширина proportion->width меньше proportion->height - ворматируем сначала по ширине, потом по высоте
+     * если высота proportion->height меньше proportion->width - форматируем сначала по высоте, потом по ширине
+     * если ширина proportion->width меньше proportion->height - форматируем сначала по ширине, потом по высоте
      * $this->proportions - размеры изображения
      *
-     * @param array $parameters - параметры изображения (ширина, высота, качество)
+     * @param array|null $parameters - параметры изображения (ширина, высота, качество)
      */
-    private function changeImage($parameters = null)
+    private function changeImage(array $parameters = null): Image
     {
+        $img = is_null($this->binary) ? \Image::make($this->path) : $this->binary;
+        //    $img =  \Image::make($this->path);
+
         if ($parameters['width'] < $parameters['height']) {
-            $this->img->widen($parameters['width'], function ($constraint) {
-                $constraint->upsize();
+            $img->widen($parameters['width'], function ($constraint) {
+            $constraint->upsize();
             });
-            if ($this->img->height() > $parameters['height']) {
-                $this->img->fit($parameters['height'], $parameters['width'], function ($constraint) {
-                    $constraint->upsize();
+            if ($img->height() > $parameters['height']) {
+                $img->fit($parameters['height'], $parameters['width'], function ($constraint) {
+                $constraint->upsize();
                 });
             }
         } else {
-            $this->img->heighten($parameters['height'], function ($constraint) {
-                $constraint->upsize();
+            $img->heighten($parameters['height'], function ($constraint) {
+            $constraint->upsize();
             });
-            if ($this->img->width() > $parameters['width']) {
-                $this->img->fit($parameters['width'], $parameters['height'], function ($constraint) {
-                    $constraint->upsize();
+            if ($img->width() > $parameters['width']) {
+                $img->fit($parameters['width'], $parameters['height'], function ($constraint) {
+                $constraint->upsize();
                 });
             }
         }
+
+        return $img;
     }
 
     /**
+     * @param   $img
      * @param array  $file_extension
      * @param string $path
      * @param int    $quality
@@ -251,17 +261,17 @@ class SaveFile
      * @return int
      * @throws \Exception
      */
-    private function saveImage(array $file_extension, string $path, int $quality, $prefix = null): int
+    private function saveImage($img, array $file_extension, string $path, int $quality, $prefix = null): int
     {
         $size = 0;
         foreach ($file_extension as $name => $mime) {
-            $this->img->response($name, $quality); // по умолчанию качество 90
+            $img->response($name, $quality); // по умолчанию качество 90
             $url    = $path . '.' . $name;
             $params = [
                 'contentType'        => $mime,
                 'contentDisposition' => 'inline',
             ];
-            $size   = StorageCloud::saveFile($url, $this->img, $params);
+            $size   = StorageCloud::saveFile($url, $img, $params);
 
             $this->extension = Extension::findByName($name);
             // если это оригинал файла
@@ -269,7 +279,7 @@ class SaveFile
                 $this->file_id = $this->addFileInfo($size);
             } else {
                 if (!empty($this->file_id)) {
-                    $this->addFileVersion($size, $prefix, $this->file_id);
+                    $this->addFileVersion($img, $size, $prefix, $this->file_id);
                 }
             }
         }
@@ -289,8 +299,7 @@ class SaveFile
     {
         if ($size > 0) {
             $type = TypeFile::getTypeByName($this->model, $this->extension->name);
-
-            $order              = $this->model->$type;
+            $order              = $this->model->$type + 1;
             $this->model->$type = $this->model->$type + 1;
             $this->model->save();
 
@@ -299,7 +308,7 @@ class SaveFile
                     'token'        => $this->token,
                     'size'         => $size,
                     'extension_id' => $this->extension->id,
-                    'order'        => $this->order ?? $order,
+                    'order'        => $order ?? $this->order,
                     'alias'        => $this->model->alias,
                     'created_at'   => Carbon::now(),
                 ]
@@ -320,13 +329,14 @@ class SaveFile
     }
 
     /**
-     * добавляем информацию о версии файла с префиксом, для изображений
+     * добавляем информацию о версии файла с префиксом для изображений
      *
+     * @param   $img
      * @param int    $size    размер файла
      * @param string $prefix
      * @param int    $file_id id оригинального файла
      */
-    private function addFileVersion($size, $prefix, $file_id)
+    private function addFileVersion($img, int $size, string $prefix, int $file_id)
     {
         FileVersion::create(
             [
@@ -334,8 +344,8 @@ class SaveFile
                 'prefix'       => $prefix,
                 'size'         => $size,
                 'extension_id' => $this->extension->id,
-                'height'       => $this->img->height(),
-                'width'        => $this->img->width(),
+                'height'       => $img->height(),
+                'width'        => $img->width(),
             ]
         );
     }
@@ -353,9 +363,9 @@ class SaveFile
             ->whereHas(
                 'file',
                 function ($q) {
-                    return $q->whereFileableId($this->model->id)->whereFileableType(
-                        $this->model->getMorphClass()
-                    );
+                return $q->whereFileableId($this->model->id)->whereFileableType(
+                    $this->model->getMorphClass()
+                );
                 }
             )
             ->orderBy('created_at', 'desc')

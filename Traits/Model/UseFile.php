@@ -22,6 +22,7 @@ use Modules\File\Services\Path;
 trait UseFile
 {
 
+    protected array $type_files = [TypeFile::IMAGE];
     /**
      * @return array
      */
@@ -159,10 +160,10 @@ trait UseFile
         {
             if (isset($item->picture['lg']))
             {
-                $files[] = $item->picture['lg']['webp'] ?? $item->picture['lg']['jpg'];
+                $files[] = config('file.file.path.storage') . ($item->picture['lg']['webp'] ?? $item->picture['lg']['jpg']);
             } elseif (isset($item->picture['sm']))
             {
-                $files[] = $item->picture['sm']['webp'] ?? $item->picture['sm']['jpg'];
+                $files[] = config('file.file.path.storage') . ($item->picture['sm']['webp'] ?? $item->picture['sm']['jpg']);
             }
         }
 
@@ -181,7 +182,7 @@ trait UseFile
         {
             if (isset($item->picture['lg']))
             {
-                $files[] = $item->picture['lg']['webp'] ?? $item->picture['lg']['jpg'];
+                $files[] = config('file.file.path.storage') . ($item->picture['lg']['webp'] ?? $item->picture['lg']['jpg']);
             }
         }
 
@@ -228,7 +229,7 @@ trait UseFile
         $url  = null;
         if ($path)
         {
-            $url = config('filesystems.file.storage') . $path;
+            $url = config('file.path.storage') . $path;
         } else
         {
             $path = 'images/plugs/' . $this->getModelNameLower($this) . '/' . $prefix . '.webp';
@@ -257,6 +258,18 @@ trait UseFile
                 "webp"   => '',
             ],
             "sm" => [
+                "jpg"    => '',
+                "height" => 0,
+                "width"  => 0,
+                "webp"   => '',
+            ],
+            "md" => [
+                "jpg"    => '',
+                "height" => 0,
+                "width"  => 0,
+                "webp"   => '',
+            ],
+            "lg" => [
                 "jpg"    => '',
                 "height" => 0,
                 "width"  => 0,

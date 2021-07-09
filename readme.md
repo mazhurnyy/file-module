@@ -4,51 +4,51 @@
 
 ## Установка
 
-Перед началом установки пакета, в проекте должны быть установлены
-пакеты
+Перед началом установки пакета, в проекте должны быть установлены пакеты
 
-nwidart/laravel-modules
+composer require nwidart/laravel-modules
 и
-joshbrw/laravel-module-installer
+composer require joshbrw/laravel-module-installer
 
 "nwidart/laravel-modules": "^8.2",
 "joshbrw/laravel-module-installer": "^2.0"
+
+затем устанивить сам модуль 
+
+composer require mazhurnyy/file-module
 
 
 ## Добавить зависимости модуля
 
 запустить
+
 php artisan module:update File
 
 ### Добавить в .env
 
-AWS_KEY_S3=homestead
-AWS_SECRET_S3=secretkey
-AWS_REGION_S3=us-east-1
-AWS_BUCKET_S3=project
-AWS_URL_S3=http://homestead:9600
+Настройки подключения к зранилищу S3
 
-FILE_ROOT_URL=
-FILE_STORAGE_URL=
+AWS_KEY=homestead
 
-### Добавить в  config/filesystems.php 
+AWS_SECRET=secretkey
 
-    /*
-    |--------------------------------------------------------------------------
-    | Пути к месту хранения файлов, добавить строки в env
-    |--------------------------------------------------------------------------
-    |
-    | FILE_ROOT_URL - путь к корню хранилища, для файлов записи проекта, бекапов и тд
-    | FILE_STORAGE_URL - полный путь к хранилищу при чтении файлов проекта
-    |
-    */
-    'file'  => [
-        'root'    => env('FILE_ROOT_URL' ,'localhost'),
-        'storage' => env('FILE_STORAGE_URL' ,'localhost'),
-    ],
+AWS_REGION=us-east-1
 
+AWS_BUCKET=project
+
+AWS_URL=http://homestead:9600
+
+### Пути к месту хранения файлов,
+
+FILE_ROOT_URL= путь к корню хранилища, для файлов записи проекта, бекапов и тд
+
+FILE_STORAGE_URL= полный путь к хранилищу при чтении файлов проекта
 
 
 ### В моделях, работающих с файлами добавить 
 
 use Modules\File\Traits\Model\UseFile;
+
+добавить возможные типы файлов, по умолчанию
+
+protected array $type_files = [TypeFile::IMAGE];

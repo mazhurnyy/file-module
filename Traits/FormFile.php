@@ -53,7 +53,6 @@ trait FormFile
                     if (Str::is('*' . $token . '*', $item))
                     {
                         $path = Str::is('http*', $item) ? $item : public_path($item);
-                        //               $size = $this->saveImgFile($model, $path, $order);
                         $saveFile = new SaveFile($model, $path, 'jpg');
                         $saveFile->saveFileImage();
                     }
@@ -94,7 +93,7 @@ trait FormFile
             if (Str::is('http*', $path))
             {
                 //  существующие файлы
-                $str   = Str::after($path, config('filesystems.file.storage'));
+                $str   = Str::after($path, config('file.path.storage'));
                 $array = explode('/', $str);
                 $token = $array[4] ?? null;
             } else

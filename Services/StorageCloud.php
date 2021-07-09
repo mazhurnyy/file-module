@@ -90,7 +90,7 @@ class StorageCloud
         $search   = Str::is('*-*', $filename_old) ? '-' : '.';
         $name_new = Str::beforeLast($filename_old, '/') . '/' . $alias_new . $search . Str::after($filename_old, $search);
         StorageCloud::copyFile(
-            $name_new, config('filesystems.file.root') . '/' . config('app.name') . '/' .
+            $name_new, config('file.root') . '/' . config('app.name') . '/' .
                      $filename_old
         );
         StorageCloud::deleteFile($filename_old);

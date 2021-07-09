@@ -142,8 +142,7 @@ class File extends Model
      */
     public function getOriginalPathAttribute(): string
     {
-        // todo перенести
-        return config('filesystems.file.storage') . Path::getPath($this);
+        return config('file.path.storage') . Path::getPath($this);
     }
 
     /**

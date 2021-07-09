@@ -75,7 +75,7 @@ class CleaningFile implements ShouldQueue
                     {
                         $i++;
                         $item->order = $i;
-                        $item->save;
+                        $item->save();
                     }
                 }
                 $type         = TypeFile::getTypeByName($model, $extension->name);

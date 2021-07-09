@@ -12,7 +12,10 @@ use Modules\File\Services\Path;
 use Modules\File\Services\StorageCloud;
 
 /**
- *  очистка файлов на  облаке и таблице файлов
+ * Class CleaningFileVersion
+ * очистка файлов на  облаке и таблице файлов
+ *
+ * @package Modules\File\Jobs
  */
 class CleaningFileVersion implements ShouldQueue
 {

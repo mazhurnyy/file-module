@@ -70,7 +70,7 @@ class TypeFile
             }
         }
 
-        return $type ?? null;
+        return $type ?? TypeFile::IMAGE;
     }
 
     /**

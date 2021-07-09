@@ -68,7 +68,7 @@ class Path
      */
     public static function getUrlFileRoot(File $file): string
     {
-        return config('filesystems.file.storage') . self::getPath($file);
+        return config('file.path.storage') . self::getPath($file);
     }
 
     /**
@@ -113,7 +113,7 @@ class Path
      */
     public static function getUrlImages(string $token, ?string $alias, string $extension, $alias_prefix = null): string
     {
-        return config('filesystems.file.storage') . Path::getPathByToken(
+        return config('file.path.storage') . Path::getPathByToken(
                 $token
             ) . $token . '/' . $alias . '-' . $alias_prefix . '.' . $extension;
     }
