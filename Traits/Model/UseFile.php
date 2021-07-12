@@ -21,8 +21,6 @@ use Modules\File\Services\Path;
  */
 trait UseFile
 {
-
-    protected array $type_files = [TypeFile::IMAGE];
     /**
      * @return array
      */

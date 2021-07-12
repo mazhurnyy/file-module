@@ -11,6 +11,7 @@ composer require nwidart/laravel-modules
 composer require joshbrw/laravel-module-installer
 
 "nwidart/laravel-modules": "^8.2",
+
 "joshbrw/laravel-module-installer": "^2.0"
 
 затем устанивить сам модуль 
@@ -49,6 +50,6 @@ FILE_STORAGE_URL= полный путь к хранилищу при чтени�
 
 use Modules\File\Traits\Model\UseFile;
 
-добавить возможные типы файлов, по умолчанию
+добавить возможные типы файлов
 
 protected array $type_files = [TypeFile::IMAGE];
