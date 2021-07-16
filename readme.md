@@ -7,12 +7,25 @@
 Перед началом установки пакета, в проекте должны быть установлены пакеты
 
 composer require nwidart/laravel-modules
+php artisan vendor:publish --provider="Nwidart\Modules\LaravelModulesServiceProvider"
 и
 composer require joshbrw/laravel-module-installer
 
 "nwidart/laravel-modules": "^8.2",
 
 "joshbrw/laravel-module-installer": "^2.0"
+
+для автозангрузки модулей дописать  в composer.json
+{
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Modules\\": "Modules/"
+    }
+  }
+}
+
+запустить composer dump-autoload
 
 затем устанивить сам модуль 
 
