@@ -3,7 +3,6 @@
 namespace Modules\File\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use SleepingOwl\Admin\Admin;
 
 class FileServiceProvider extends ServiceProvider
 {
@@ -35,18 +34,19 @@ class FileServiceProvider extends ServiceProvider
     /**
      * Boot the application events.
      *
-     * @param Admin $admin
      *
      * @return void
      */
-    public function boot(Admin $admin)
+    public function boot()
     {
         $this->projectRegisterTranslations();
         $this->projectRegisterConfig();
         $this->projectRegisterViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-        $admin->registerSections($this->sections);
+        if(class_exists(SleepingOwl\Admin\Admin::class)) {
+            (new SleepingOwl\Admin\Admin())->registerSections($this->sections);
+        }
     }
 
     /**
