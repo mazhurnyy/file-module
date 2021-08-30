@@ -26,8 +26,7 @@ trait Prefixes
         $model = Str::lower(Str::after($model_path, '\Models\\'));
         // имя модуля
         $module = is_null(Str::is('App\Models', $model_path))
-            ? $model :
-            Str::lower(Str::between($model_path, 'Modules\\', '\Models'));
+            ? Str::lower(Str::between($model_path, 'Modules\\', '\Models')) : $model;
 
         return config($module . '.prefixes_model.' . $model) ?? [];
     }
