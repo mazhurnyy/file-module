@@ -299,7 +299,7 @@ class SaveFile
     {
         if ($size > 0) {
             $type = TypeFile::getTypeByName($this->model, $this->extension->name);
-            $order              = $this->model->$type + 1;
+            $order = ($this->order == 1) ? $this->model->$type + 1 : $this->order;
             $this->model->$type = $this->model->$type + 1;
             $this->model->save();
 
@@ -308,7 +308,7 @@ class SaveFile
                     'token'        => $this->token,
                     'size'         => $size,
                     'extension_id' => $this->extension->id,
-                    'order'        => $order ?? $this->order,
+                    'order'        => $order,
                     'alias'        => $this->model->alias,
                     'created_at'   => Carbon::now(),
                 ]
