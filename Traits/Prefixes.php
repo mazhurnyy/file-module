@@ -23,10 +23,10 @@ trait Prefixes
     public static function getPrefixes(string $model_path): array
     {
         // имя модели
-        $model = Str::lower(Str::after($model_path, '\Models\\'));
+        $model = Str::snake(Str::after($model_path, '\Models\\'));
         // имя модуля
         $module = is_null(Str::is('App\Models', $model_path))
-            ? Str::lower(Str::between($model_path, 'Modules\\', '\Models')) : $model;
+            ? Str::snake(Str::between($model_path, 'Modules\\', '\Models')) : $model;
 
         return config($module . '.prefixes_model.' . $model) ?? [];
     }
