@@ -42,7 +42,7 @@ class CopyFileImage implements ShouldQueue
      */
     public function handle()
     {
-        $saveFile = (new SaveFile($this->data['model'], $this->data['path'], $this->data['extension']), $this->data['order'] ?? null);
+        $saveFile = (new SaveFile($this->data['model'], $this->data['path'], $this->data['extension'], $this->data['order'] ?? null));
         if ($saveFile->saveFileImage() == 0)
         {
             throw new \Exception();
