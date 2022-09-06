@@ -19,6 +19,7 @@ class TypeFile
     const IMAGE        = 'images';
     const VIDEO        = 'video';
     const PRESENTATION = 'presentation';
+    const TXT          = 'txt';
 
     /**
      * Возвращаем список форматов
@@ -35,6 +36,7 @@ class TypeFile
                 self::IMAGE        => config('file.type.images') ?? ['jpg', 'webp', 'jpeg', 'gif', 'png', 'bmp'],
                 self::VIDEO        => config('file.type.video') ?? ['avi', 'mp4', 'mkv', 'wmv', 'mpeg'],
                 self::PRESENTATION => config('file.type.presentations') ?? ['ppt', 'pptx'],
+                self::TXT          => config('file.type.txt') ?? ['txt'],
             ]
         );
     }
@@ -54,17 +56,15 @@ class TypeFile
     /**
      * Находим тип файла по расширению и разрешенным типам модели
      *
-     * @param Model|null  $model
-     * @param string $name
+     * @param Model|null $model
+     * @param string     $name
      *
      * @return string|null
      */
     public static function getTypeByName(?Model $model, string $name): ?string
     {
-        foreach ($model->getTypeFile() as $item)
-        {
-            if (in_array($name, self::getExtensions($item)))
-            {
+        foreach ($model->getTypeFile() as $item) {
+            if (in_array($name, self::getExtensions($item))) {
                 $type = $item;
                 break;
             }
